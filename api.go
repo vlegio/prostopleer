@@ -11,7 +11,7 @@ import (
 )
 
 const TOKEN_URL = "http://api.pleer.com/token.php"
-const API_URL = "http://api.pleer.com/resource.php"
+const API_URL = "http://api.pleer.com/index.php"
 
 type Api struct {
 	User        string    `json:"-"`
