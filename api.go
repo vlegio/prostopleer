@@ -79,7 +79,7 @@ func (a *Api) SearchTrack(query, quality string, page, perPage int) (tracks []Tr
 		"query":           []string{query},
 		"quality":         []string{quality},
 		"page":            []string{strconv.Itoa(page)},
-		"result_per_page": []string{strconv.Itoa(perPage)},
+		"result_on_page": []string{strconv.Itoa(perPage)},
 		"method":          []string{"tracks_search"},
 	}
 	body, err := a.sendPost(data, API_URL)
