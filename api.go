@@ -3,7 +3,6 @@ package prostopleer
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"strconv"
