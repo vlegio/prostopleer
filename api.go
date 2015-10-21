@@ -86,7 +86,6 @@ func (a *Api) SearchTrack(query, quality string, page, perPage int) (tracks []Tr
 	if err != nil {
 		return tracks, count, err
 	}
-	log.Println(string(body))
 	err = json.Unmarshal(body, &searchResult)
 	if err != nil {
 		return tracks, count, err
