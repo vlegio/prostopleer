@@ -11,7 +11,7 @@ import (
 )
 
 const TOKEN_URL = "http://api.pleer.com/token.php"
-const API_URL = "http://api.pleer.com/resource.php"
+const API_URL = "http://api.pleer.com/index.php"
 
 type Api struct {
 	User        string    `json:"-"`
@@ -62,7 +62,7 @@ func (a *Api) updateToken() (err error) {
 }
 
 type searchResults struct {
-	Count  string `json:"count"`
+	Count  json.Number `json:"count"`
 	Tracks map[string]Track
 }
 
@@ -73,14 +73,14 @@ type searchResults struct {
 //page = current page
 //
 //perPage = result per page
-func (a *Api) SearchTrack(query, quality string, page, perPage int) (tracks []Track, count int, err error) {
+func (a *Api) SearchTrack(query, quality string, page, perPage int) (tracks []Track, count int64, err error) {
 	searchResult := searchResults{}
 	data := map[string][]string{
-		"query":           []string{query},
-		"quality":         []string{quality},
-		"page":            []string{strconv.Itoa(page)},
-		"result_per_page": []string{strconv.Itoa(perPage)},
-		"method":          []string{"tracks_search"},
+		"query":          []string{query},
+		"quality":        []string{quality},
+		"page":           []string{strconv.Itoa(page)},
+		"result_on_page": []string{strconv.Itoa(perPage)},
+		"method":         []string{"tracks_search"},
 	}
 	body, err := a.sendPost(data, API_URL)
 	if err != nil {
@@ -90,7 +90,7 @@ func (a *Api) SearchTrack(query, quality string, page, perPage int) (tracks []Tr
 	if err != nil {
 		return tracks, count, err
 	}
-	count, err = strconv.Atoi(searchResult.Count)
+	count, err = searchResult.Count.Int64()
 	for _, track := range searchResult.Tracks {
 		track.api = a
 		tracks = append(tracks, track)
@@ -103,7 +103,7 @@ func (a *Api) SearchTrack(query, quality string, page, perPage int) (tracks []Tr
 //list_type = 1- 1 week, 2 -  1 month, 3 - 3 months, 4 - 6 months, 5 - 1 year
 //
 //lang = Type of TopList (ru, en)
-func (a *Api) GetTopList(list_type, page int, lang string) (tracks []Track, count int, err error) {
+func (a *Api) GetTopList(list_type, page int, lang string) (tracks []Track, count int64, err error) {
 	searchResult := searchResults{}
 	data := map[string][]string{
 		"list_type": []string{strconv.Itoa(list_type)},
@@ -119,7 +119,7 @@ func (a *Api) GetTopList(list_type, page int, lang string) (tracks []Track, coun
 	if err != nil {
 		return tracks, count, err
 	}
-	count, err = strconv.Atoi(searchResult.Count)
+	count, err = searchResult.Count.Int64()
 	for _, track := range searchResult.Tracks {
 		track.api = a
 		tracks = append(tracks, track)
