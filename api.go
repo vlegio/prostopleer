@@ -62,8 +62,15 @@ func (a *Api) updateToken() (err error) {
 }
 
 type searchResults struct {
+	Success bool `json:"success"`
 	Count  json.Number `json:"count"`
-	Tracks map[string]Track
+	Tracks map[string]Track `json:"tracks"`
+}
+
+type searchResultsEmpty struct {
+	Success bool `json:"success"`
+	Count  json.Number `json:"count"`
+	Tracks []Track `json:"tracks"`
 }
 
 //Search track by query
@@ -86,10 +93,20 @@ func (a *Api) SearchTrack(query, quality string, page, perPage int) (tracks []Tr
 	if err != nil {
 		return tracks, count, err
 	}
+
 	err = json.Unmarshal(body, &searchResult)
-	if err != nil {
+	if err != nil {		
+		if _, ok := err.(*json.UnmarshalTypeError); ok {		
+			searchResultEmpty := searchResultsEmpty{}
+			err = json.Unmarshal(body, &searchResultEmpty)
+			if err == nil {
+				return tracks, 0, nil	
+			}
+		}
+
 		return tracks, count, err
 	}
+
 	count, err = searchResult.Count.Int64()
 	for _, track := range searchResult.Tracks {
 		track.api = a
